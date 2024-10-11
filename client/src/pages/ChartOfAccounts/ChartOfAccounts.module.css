@@ -1,0 +1,44 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.table th {
+  background-color: rgb(74, 94, 205);
+  color: #fff;
+  font-size: 24px;
+  position: sticky;
+}
+
+.table td {
+  font-size: 20px;
+}
+
+.editBtn,
+.deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.editBtn {
+  color: #007bff;
+}
+
+.deleteBtn {
+  color: #dc3545;
+}
+
+.editBtn:hover,
+.deleteBtn:hover {
+  opacity: 0.7;
+}
