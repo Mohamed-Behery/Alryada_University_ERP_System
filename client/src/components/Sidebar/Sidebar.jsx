@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
-import { Link } from "react-router-dom";
-import LogoImg from "../../images/WhatsApp Image 2024-10-11 at 01.25.11_4fc6bba8.jpg";
+import { Link, useNavigate } from "react-router-dom";
+// import LogoImg from "../../images/WhatsApp Image 2024-10-11 at 01.25.11_4fc6bba8.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -21,7 +21,9 @@ import {
   faBars,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Sidebar = () => {
+const Sidebar = ({ user, onLogout }) => {
+  const navigate = useNavigate();
+
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isTreasuryOpen, setTreasuryOpen] = useState(false);
   const [isInventoryOpen, setInventoryOpen] = useState(false);
@@ -36,6 +38,11 @@ const Sidebar = () => {
 
   const toggleInventoryMenu = () => {
     setInventoryOpen(!isInventoryOpen);
+  };
+
+  const handleLogout = () => {
+    onLogout();
+    navigate("/login");
   };
 
   return (
@@ -78,7 +85,9 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <FontAwesomeIcon icon={faArchive} /> سجلات المعاملات
+              <Link to="/cash-register">
+                <FontAwesomeIcon icon={faArchive} /> سجلات المعاملات
+              </Link>
             </li>
           </ul>
         )}
@@ -117,10 +126,12 @@ const Sidebar = () => {
         <li>
           <FontAwesomeIcon icon={faCogs} /> {isSidebarOpen && "الإعدادات"}
         </li>
-        <li>
-          <FontAwesomeIcon icon={faSignOutAlt} />{" "}
-          {isSidebarOpen && "تسجيل الخروج"}
-        </li>
+        {user && (
+          <li onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            {isSidebarOpen && "تسجيل الخروج"}
+          </li>
+        )}
       </ul>
     </div>
   );

@@ -4,6 +4,20 @@
   box-sizing: border-box;
   font-family: "Sakkal Majalla", sans-serif;
 }
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: normal;
+  scrollbar-color: #0061ab #ddd;
+}
+::-webkit-scrollbar {
+  width: 0.6vw;
+}
+::-webkit-scrollbar-thumb {
+  background: #0061ab;
+}
+::-webkit-scrollbar-track {
+  background: #ddd;
+}
 .app {
   display: flex;
   height: 100vh;
