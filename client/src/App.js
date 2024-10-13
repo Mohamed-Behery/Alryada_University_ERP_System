@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Home from "./pages/Home/Home";
@@ -6,6 +6,8 @@ import ChartOfAccounts from "./pages/ChartOfAccounts/ChartOfAccounts";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login/Login";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import CashRegister from "./pages/CashRegister/CashRegister";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,18 +53,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
-              path="*"
+              path="/cash-register"
               element={
-                <p>
-                  الصفحة غير موجودة <br />
-                  <Link to="/">
-                    <b>العودة إلى الصفحة الرئيسية</b>
-                  </Link>
-                </p>
+                <ProtectedRoute user={user} requiredRole="admin">
+                  <CashRegister />
+                </ProtectedRoute>
               }
             />
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </div>

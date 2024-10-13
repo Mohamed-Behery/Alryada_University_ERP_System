@@ -12,7 +12,7 @@ const ProtectedRoute = ({ user, children, requiredRole }) => {
         <p className={styles.notAuthorizedMessage}>
           ليس لديك الصلاحية للدخول إلى هذه الصفحة.
           <br />
-          <Link to="/">العودة إلي الصفحة الرئيسية</Link>
+          <Link to="/">العودة إلى الصفحة الرئيسية</Link>
         </p>
       </div>
     );

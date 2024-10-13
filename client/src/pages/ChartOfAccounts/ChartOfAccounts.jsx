@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./ChartOfAccounts.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,51 +10,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const ChartOfAccounts = () => {
-  const [accounts, setAccounts] = useState([
-    {
-      id: 1,
-      accountNumber: "1001",
-      accountName: "الأصول الثابتة",
-      type: "أصول",
-      balance: "500,000",
-      subAccounts: [
-        {
-          id: 11,
-          accountNumber: "1010",
-          accountName: "المباني",
-          type: "أصول",
-          balance: "200,000",
-          subAccounts: [
-            {
-              id: 111,
-              accountNumber: "1011",
-              accountName: "المباني التجارية",
-              type: "أصول",
-              balance: "100,000",
-            },
-          ],
-        },
-        {
-          id: 12,
-          accountNumber: "1020",
-          accountName: "المركبات",
-          type: "أصول",
-          balance: "100,000",
-        },
-      ],
-    },
-    {
-      id: 2,
-      accountNumber: "2001",
-      accountName: "الخصوم المتداولة",
-      type: "خصوم",
-      balance: "200,000",
-    },
-  ]);
+  // يتم استرجاع البيانات المخزنة في localStorage عند تحميل المكون لأول مرة
+  const [accounts, setAccounts] = useState(() => {
+    const storedAccounts = localStorage.getItem("chartOfAccounts");
+    return storedAccounts ? JSON.parse(storedAccounts) : []; // إذا لم تكن البيانات موجودة، يتم تعيين مصفوفة فارغة
+  });
 
   const [openAccounts, setOpenAccounts] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  // const [currentAccount, setCurrentAccount] = useState(null);
   const [formData, setFormData] = useState({
     id: null,
     accountNumber: "",
@@ -63,6 +26,11 @@ const ChartOfAccounts = () => {
     balance: "",
     parentId: null,
   });
+
+  // تحديث البيانات المخزنة في localStorage عند تغيير الحسابات
+  useEffect(() => {
+    localStorage.setItem("chartOfAccounts", JSON.stringify(accounts));
+  }, [accounts]);
 
   const toggleAccount = (accountId) => {
     if (openAccounts.includes(accountId)) {
@@ -80,7 +48,7 @@ const ChartOfAccounts = () => {
         accountName: account.accountName,
         type: account.type,
         balance: account.balance,
-        parentId: null,
+        parentId: account.parentId || null,
       });
     } else {
       setFormData({
@@ -124,14 +92,21 @@ const ChartOfAccounts = () => {
         accountName: formData.accountName,
         type: formData.type,
         balance: formData.balance,
-        subAccounts: [],
+        subAccounts: [], // تأكد من وجود هذا الحقل
       };
 
       if (formData.parentId) {
-        setAccounts((prevAccounts) =>
-          addSubAccount(prevAccounts, formData.parentId, newAccount)
-        );
+        // إضافة الحساب كحساب فرعي
+        setAccounts((prevAccounts) => {
+          const updatedAccounts = addSubAccount(
+            prevAccounts,
+            formData.parentId,
+            newAccount
+          );
+          return updatedAccounts; // أعد القائمة المحدثة فقط
+        });
       } else {
+        // إضافة الحساب كحساب رئيسي
         setAccounts((prevAccounts) => [...prevAccounts, newAccount]);
       }
     }
@@ -139,7 +114,28 @@ const ChartOfAccounts = () => {
     closeForm();
   };
 
-  // تحديث الحساب بناءً على ID
+  // دالة لإضافة الحساب الفرعي إلى الحساب الرئيسي
+  const addSubAccount = (accounts, parentId, newAccount) => {
+    return accounts.map((account) => {
+      if (account.id === parentId) {
+        return {
+          ...account,
+          subAccounts: [...(account.subAccounts || []), newAccount], // إضافة الحساب الجديد إلى الحسابات الفرعية
+        };
+      }
+
+      if (account.subAccounts && account.subAccounts.length > 0) {
+        return {
+          ...account,
+          subAccounts: addSubAccount(account.subAccounts, parentId, newAccount), // استدعاء الدالة بشكل متداخل لإضافة الحساب إلى الحسابات الفرعية
+        };
+      }
+
+      return account; // حساب بدون حسابات فرعية
+    });
+  };
+
+  // تحديث حساب بناءً على ID
   const updateAccount = (accounts, id, updatedAccount) => {
     return accounts.map((account) => {
       if (account.id === id) {
@@ -155,26 +151,7 @@ const ChartOfAccounts = () => {
     });
   };
 
-  // إضافة حساب فرعي
-  const addSubAccount = (accounts, parentId, newAccount) => {
-    return accounts.map((account) => {
-      if (account.id === parentId) {
-        return {
-          ...account,
-          subAccounts: [...account.subAccounts, newAccount],
-        };
-      }
-      if (account.subAccounts) {
-        return {
-          ...account,
-          subAccounts: addSubAccount(account.subAccounts, parentId, newAccount),
-        };
-      }
-      return account;
-    });
-  };
-
-  // حذف الحساب
+  // حذف حساب
   const deleteAccount = (accountId) => {
     setAccounts((prevAccounts) => removeAccount(prevAccounts, accountId));
   };
@@ -194,6 +171,19 @@ const ChartOfAccounts = () => {
       .filter((account) => account.id !== accountId);
   };
 
+  // دالة لعرض الحسابات الفرعية بشكل متداخل
+  const renderSubAccounts = (subAccounts, level) => {
+    return subAccounts.map((subAccount) => (
+      <React.Fragment key={subAccount.id}>
+        <option value={subAccount.id}>
+          {`${"--".repeat(level)} ${subAccount.accountName}`}
+        </option>
+        {subAccount.subAccounts &&
+          renderSubAccounts(subAccount.subAccounts, level + 1)}
+      </React.Fragment>
+    ));
+  };
+
   const renderAccountRow = (account, level = 0) => {
     const isOpen = openAccounts.includes(account.id);
 
@@ -201,7 +191,7 @@ const ChartOfAccounts = () => {
       <React.Fragment key={account.id}>
         <tr className={styles[`level${level}`]}>
           <td>{account.accountNumber}</td>
-          <td>
+          <td className={styles.accountName}>
             {account.subAccounts && (
               <span
                 className={styles.arrow}
@@ -261,7 +251,17 @@ const ChartOfAccounts = () => {
             <th>حذف</th>
           </tr>
         </thead>
-        <tbody>{accounts.map((account) => renderAccountRow(account))}</tbody>
+        <tbody>
+          {accounts && accounts.length > 0 ? (
+            accounts.map((account) => renderAccountRow(account))
+          ) : (
+            <tr>
+              <td colSpan="6" className={styles.emptyMsg}>
+                لا توجد حسابات حاليًا
+              </td>
+            </tr>
+          )}
+        </tbody>
       </table>
 
       {isFormVisible && (
@@ -277,6 +277,7 @@ const ChartOfAccounts = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, accountNumber: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
@@ -287,6 +288,7 @@ const ChartOfAccounts = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, accountName: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
@@ -297,6 +299,7 @@ const ChartOfAccounts = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
@@ -307,6 +310,7 @@ const ChartOfAccounts = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, balance: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
@@ -314,20 +318,33 @@ const ChartOfAccounts = () => {
                 <select
                   value={formData.parentId || ""}
                   onChange={(e) =>
-                    setFormData({ ...formData, parentId: e.target.value })
+                    setFormData({
+                      ...formData,
+                      parentId: e.target.value ? Number(e.target.value) : null,
+                    })
                   }
                 >
                   <option value="">حساب رئيسي</option>
                   {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.accountName}
-                    </option>
+                    <React.Fragment key={account.id}>
+                      <option value={account.id}>
+                        {`${"--".repeat(account.level)} ${account.accountName}`}
+                      </option>
+                      {account.subAccounts &&
+                        renderSubAccounts(account.subAccounts, 1)}
+                    </React.Fragment>
                   ))}
                 </select>
               </div>
               <div className={styles.formActions}>
-                <button type="submit">{formData.id ? "تعديل" : "إضافة"}</button>
-                <button type="button" onClick={closeForm}>
+                <button type="submit" className={styles.submitBtn}>
+                  {formData.id ? "تعديل" : "إضافة"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={closeForm}
+                >
                   إلغاء
                 </button>
               </div>
@@ -340,3 +357,24 @@ const ChartOfAccounts = () => {
 };
 
 export default ChartOfAccounts;
+
+export const getAllAccounts = () => {
+  const storedAccounts =
+    JSON.parse(localStorage.getItem("chartOfAccounts")) || [];
+
+  // دالة لاسترجاع الحسابات الفرعية أيضًا مع تحديد المستوى (Level)
+  const flattenAccounts = (accounts, level = 0) => {
+    return accounts.reduce((acc, account) => {
+      // نحدد مستوى الحساب
+      const accountWithLevel = { ...account, level };
+
+      // نقوم بجمع الحساب مع الحسابات الفرعية مع زيادة المستوى لكل فرع
+      return acc.concat(
+        accountWithLevel,
+        flattenAccounts(account.subAccounts || [], level + 1)
+      );
+    }, []);
+  };
+
+  return flattenAccounts(storedAccounts);
+};
