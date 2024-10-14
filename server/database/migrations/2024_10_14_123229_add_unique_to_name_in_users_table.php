@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cash_register', function (Blueprint $table) {
-            $table->id();
-            $table->decimal('total_balance', 30, 2)->default(0.00);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('name')->unique()->change();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('cash_register');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

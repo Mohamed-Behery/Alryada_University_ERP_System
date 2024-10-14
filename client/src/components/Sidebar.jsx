@@ -20,6 +20,8 @@ import {
   faBars,
   faMoon,
   faSun,
+  faUser,
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Container = styled.div`
@@ -105,6 +107,7 @@ const SubMenu = styled.ul`
     font-size: 16px;
     font-weight: normal;
     padding: 8px;
+    color: ${({ theme }) => theme.text};
     cursor: pointer;
     transition: all 0.3s ease;
   }
@@ -120,6 +123,10 @@ const SubMenu = styled.ul`
   li a:hover {
     color: ${({ theme }) => theme.primary};
   }
+
+  li svg {
+    margin-left: ${(props) => (props.isSidebarOpen ? "10px" : "0")};
+  }
 `;
 
 const DarkModeToggle = styled(SidebarItem)`
@@ -130,19 +137,24 @@ const Sidebar = ({ user, onLogout, darkMode, toggleDarkMode }) => {
   const navigate = useNavigate();
 
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [isTreasuryOpen, setTreasuryOpen] = useState(false);
+  const [isCashRegisterOpen, setCashRegisterOpen] = useState(false);
   const [isInventoryOpen, setInventoryOpen] = useState(false);
+  const [isSettingsOpen, setSettingsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const toggleTreasuryMenu = () => {
-    setTreasuryOpen(!isTreasuryOpen);
+  const toggleCashRegisterMenu = () => {
+    setCashRegisterOpen(!isCashRegisterOpen);
   };
 
   const toggleInventoryMenu = () => {
     setInventoryOpen(!isInventoryOpen);
+  };
+
+  const toggleSettingsMenu = () => {
+    setSettingsOpen(!isSettingsOpen);
   };
 
   const handleLogout = () => {
@@ -174,13 +186,16 @@ const Sidebar = ({ user, onLogout, darkMode, toggleDarkMode }) => {
           </Link>
         </SidebarItem>
 
-        <SidebarItem onClick={toggleTreasuryMenu} isSidebarOpen={isSidebarOpen}>
+        <SidebarItem
+          onClick={toggleCashRegisterMenu}
+          isSidebarOpen={isSidebarOpen}
+        >
           <FontAwesomeIcon icon={faCashRegister} />{" "}
           {isSidebarOpen && "الخزينة والبنوك"}{" "}
           {isSidebarOpen && <FontAwesomeIcon icon={faCaretDown} />}
         </SidebarItem>
 
-        {isSidebarOpen && isTreasuryOpen && (
+        {isSidebarOpen && isCashRegisterOpen && (
           <SubMenu>
             <li>
               <Link to="/bank-accounts">
@@ -239,18 +254,36 @@ const Sidebar = ({ user, onLogout, darkMode, toggleDarkMode }) => {
           <FontAwesomeIcon icon={faFileAlt} /> {isSidebarOpen && "التقارير"}
         </SidebarItem>
 
-        <SidebarItem isSidebarOpen={isSidebarOpen}>
+        <SidebarItem onClick={toggleSettingsMenu} isSidebarOpen={isSidebarOpen}>
           <FontAwesomeIcon icon={faCogs} /> {isSidebarOpen && "الإعدادات"}
+          {isSidebarOpen && <FontAwesomeIcon icon={faCaretDown} />}
         </SidebarItem>
 
-        <DarkModeToggle onClick={toggleDarkMode} isSidebarOpen={isSidebarOpen}>
-          {darkMode ? (
-            <FontAwesomeIcon icon={faSun} />
-          ) : (
-            <FontAwesomeIcon icon={faMoon} />
-          )}
-          {isSidebarOpen && (darkMode ? "الوضع العادي" : "الوضع المظلم")}
-        </DarkModeToggle>
+        {isSidebarOpen && isSettingsOpen && (
+          <SubMenu>
+            <li>
+              <Link to="/users">
+                <FontAwesomeIcon icon={faUser} />
+                المستخدمين
+              </Link>
+            </li>
+            <li>
+              <FontAwesomeIcon icon={faLock} />
+              إدارة الصلاحيات
+            </li>
+            <DarkModeToggle
+              onClick={toggleDarkMode}
+              isSidebarOpen={isSidebarOpen}
+            >
+              {darkMode ? (
+                <FontAwesomeIcon icon={faSun} />
+              ) : (
+                <FontAwesomeIcon icon={faMoon} />
+              )}
+              {isSidebarOpen && (darkMode ? "الوضع العادي" : "الوضع المظلم")}
+            </DarkModeToggle>
+          </SubMenu>
+        )}
 
         {user && (
           <SidebarItem onClick={handleLogout} isSidebarOpen={isSidebarOpen}>

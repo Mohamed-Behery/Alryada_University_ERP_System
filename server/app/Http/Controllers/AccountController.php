@@ -2,63 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $accounts = Account::with('children')->whereNull('parent_id')->get();
+
+        return response()->json($accounts);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'account_name' => 'required|string',
+            'account_code' => 'nullable|string',
+            'account_type' => 'required|string',
+            'parent_id'    => 'nullable|exists:chart_of_accounts,id',
+            'is_active'    => 'boolean',
+            'opening_balance' => 'numeric',
+            'current_balance' => 'numeric',
+        ]);
+
+        $account = Account::create($validated);
+
+        return response()->json(['message' => 'Account created successfully', 'account' => $account], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $account = Account::findOrFail($id);
+
+        $validated = $request->validate([
+            'account_name' => 'required|string',
+            'account_code' => 'nullable|string',
+            'account_type' => 'required|string',
+            'parent_id'    => 'nullable|exists:chart_of_accounts,id',
+            'is_active'    => 'boolean',
+            'opening_balance' => 'numeric',
+            'current_balance' => 'numeric',
+        ]);
+
+        $account->update($validated);
+
+        return response()->json(['message' => 'Account updated successfully', 'account' => $account]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $account = Account::findOrFail($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        if ($account->children()->count() > 0) {
+            return response()->json(['message' => 'Cannot delete account with sub-accounts'], 400);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $account->delete();
+
+        return response()->json(['message' => 'Account deleted successfully']);
     }
 }

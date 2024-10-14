@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
+  faEnvelope,
   faLock,
-  faSignInAlt,
   faEye,
   faEyeSlash,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import Logo from "../images/RST-logo.png";
 import styled from "styled-components";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
-const LoginContainer = styled.div`
+const SignupContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,7 +28,7 @@ const Heading = styled.div`
   }
 `;
 
-const LoginForm = styled.div`
+const SignupForm = styled.div`
   background-color: #fff;
   padding: 30px;
   border-radius: 16px;
@@ -100,15 +98,6 @@ const ErrorText = styled.p`
   text-align: center;
 `;
 
-const Loading = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 24px;
-  color: #555;
-`;
-
 const PasswordWrapper = styled.div`
   position: relative;
 `;
@@ -123,66 +112,44 @@ const PasswordToggle = styled.span`
   user-select: none;
 `;
 
-const Login = ({ setUser }) => {
-  const navigate = useNavigate();
+const Register = () => {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("user");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/");
-    } else {
-      setLoading(false);
-    }
-  }, [navigate]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  if (loading) {
-    return <Loading>Loading...</Loading>;
-  }
-
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/login", {
+      const response = await axios.post("http://localhost:8000/api/register", {
         name,
+        email,
         password,
+        role,
       });
-      const { token, userData } = response.data;
-
-      const decodedToken = jwtDecode(token);
-
-      localStorage.setItem("token", token);
-      setUser({
-        token,
-        id: decodedToken.sub,
-        name: userData.name,
-        role: userData.role,
-      });
-
-      navigate("/");
+      if (response.data) {
+        setError("تم إنشاء الحساب بنجاح.");
+      }
     } catch (error) {
-      setError("اسم المستخدم او كلمة المرور غير صحيحة.");
-      console.error("Error logging in", error);
+      console.error("Error signing up", error);
+      setError("حدث خطأ أثناء إنشاء الحساب. تأكد من صحة البيانات.");
     }
   };
 
   return (
-    <LoginContainer>
+    <SignupContainer>
       <Heading>
-        <img src={Logo} alt="Logo" />
-        <h2>جامعة الريادة للعلوم والتكنولوجيا</h2>
+        <h2>إنشاء حساب</h2>
       </Heading>
-      <LoginForm>
-        <h3>تسجيل الدخول</h3>
-        <form onSubmit={handleLogin}>
+      <SignupForm>
+        <h3>تسجيل حساب جديد</h3>
+        <form onSubmit={handleSignup}>
           <FormGroup>
             <label>
               <FontAwesomeIcon icon={faUser} />
@@ -192,6 +159,18 @@ const Login = ({ setUser }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </FormGroup>
+          <FormGroup>
+            <label>
+              <FontAwesomeIcon icon={faEnvelope} />
+              البريد الإلكتروني
+            </label>
+            <FormControl
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </FormGroup>
@@ -212,15 +191,32 @@ const Login = ({ setUser }) => {
               </PasswordToggle>
             </PasswordWrapper>
           </FormGroup>
+          <FormGroup>
+            <label htmlFor="role">الصلاحية</label>
+            <select
+              name="role"
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="accountant">محاسب</option>
+              <option value="inventory-manager">مسئول المخزون</option>
+              <option value="full-access">Full Access</option>
+            </select>
+          </FormGroup>
+
           {error && <ErrorText>{error}</ErrorText>}
           <Button type="submit">
-            <FontAwesomeIcon icon={faSignInAlt} />
-            تسجيل الدخول
+            <FontAwesomeIcon icon={faUserPlus} />
+            إنشاء حساب
           </Button>
         </form>
-      </LoginForm>
-    </LoginContainer>
+      </SignupForm>
+    </SignupContainer>
   );
 };
 
-export default Login;
+export default Register;

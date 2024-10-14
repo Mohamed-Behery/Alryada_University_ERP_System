@@ -1,37 +1,22 @@
-import { Link, Navigate } from "react-router-dom";
-import styled from "styled-components";
+import { Navigate } from "react-router-dom";
 
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f5f5;
-`;
+const ProtectedRoute = ({ user, children, requiredRoles }) => {
+  console.log("User role:", user ? user.role : "No user");
+  console.log("Required role:", requiredRoles);
 
-const Message = styled.p`
-  font-size: 24px;
-  text-align: center;
-  color: red;
-`;
-
-const Home = styled(Link)``;
-
-const ProtectedRoute = ({ user, children, requiredRole }) => {
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    return (
-      <Container>
-        <Message>
-          ليس لديك الصلاحية للدخول إلى هذه الصفحة.
-          <br />
-          <Home to="/">العودة إلى الصفحة الرئيسية</Home>
-        </Message>
-      </Container>
-    );
+  const userHasAccess =
+    user && requiredRoles && requiredRoles.includes(user.role);
+
+  console.log("User Role:", user.role);
+  console.log("Required Roles:", requiredRoles);
+  console.log("User Has Access:", userHasAccess);
+
+  if (!userHasAccess) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

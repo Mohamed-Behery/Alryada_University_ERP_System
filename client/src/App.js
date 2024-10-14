@@ -5,11 +5,16 @@ import Home from "./pages/Home";
 import ChartOfAccounts from "./pages/ChartOfAccounts";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CashRegister from "./pages/CashRegister";
 import NotFound from "./pages/NotFound";
 import { lightTheme, darkTheme } from "./utils/Theme";
 import styled from "styled-components";
+import { jwtDecode } from "jwt-decode";
+import Users from "./pages/Users";
+import EditUser from "./components/EditUser";
+import Unauthorized from "./pages/Unauthorized";
 
 const AppContainer = styled.div`
   display: flex;
@@ -26,9 +31,20 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser({
+          token,
+          id: decoded.sub,
+          name: decoded.name,
+          role: decoded.role || "user",
+        });
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
 
     const storedDarkMode = localStorage.getItem("darkMode");
@@ -46,7 +62,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -66,18 +82,15 @@ function App() {
           <Content>
             <Routes>
               <Route path="/login" element={<Login setUser={setUser} />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute user={user}>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route
                 path="/chart-of-accounts"
                 element={
-                  <ProtectedRoute user={user} requiredRole="admin">
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
                     <ChartOfAccounts />
                   </ProtectedRoute>
                 }
@@ -85,11 +98,48 @@ function App() {
               <Route
                 path="/cash-register"
                 element={
-                  <ProtectedRoute user={user} requiredRole="admin">
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
                     <CashRegister />
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
+                    <Register />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/users/edit/:id"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
+                    <EditUser />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Content>
