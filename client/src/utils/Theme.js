@@ -9,6 +9,6 @@ export const darkTheme = {
   neutral: "#1c1c1d",
   primary: "#fff",
   text: "#ddd",
-  bg: "#0f0f0f",
+  bg: "#1D2A35",
   border: "#ddd",
 };

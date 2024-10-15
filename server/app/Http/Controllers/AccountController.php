@@ -31,6 +31,13 @@ class AccountController extends Controller
         return response()->json(['message' => 'Account created successfully', 'account' => $account], 201);
     }
 
+    public function show($id)
+    {
+        $account = Account::with('children')->findOrFail($id);
+
+        return response()->json($account);
+    }
+
     public function update(Request $request, $id)
     {
         $account = Account::findOrFail($id);
