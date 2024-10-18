@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
-import CashRegister from "./pages/CashRegister";
 import NotFound from "./pages/NotFound";
 import { lightTheme, darkTheme } from "./utils/Theme";
 import styled from "styled-components";
@@ -15,6 +14,8 @@ import { jwtDecode } from "jwt-decode";
 import Users from "./pages/Users";
 import EditUser from "./components/EditUser";
 import Unauthorized from "./pages/Unauthorized";
+import CashRegisters from "./pages/CashRegisters";
+import Banks from "./pages/Banks";
 
 const AppContainer = styled.div`
   display: flex;
@@ -96,17 +97,6 @@ function App() {
                 }
               />
               <Route
-                path="/cash-register"
-                element={
-                  <ProtectedRoute
-                    user={user}
-                    requiredRoles={["admin", "full-access"]}
-                  >
-                    <CashRegister />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/users"
                 element={
                   <ProtectedRoute
@@ -136,6 +126,28 @@ function App() {
                     requiredRoles={["admin", "full-access"]}
                   >
                     <EditUser />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cash-registers"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
+                    <CashRegisters />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/banks"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    requiredRoles={["admin", "full-access"]}
+                  >
+                    <Banks />
                   </ProtectedRoute>
                 }
               />

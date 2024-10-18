@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const UsersContainer = styled.div`
@@ -38,8 +38,8 @@ const AddButton = styled.button`
   margin-bottom: 16px;
   margin-right: 16px;
   padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
+  background-color: ${({ theme }) => theme.primary};
+  color: ${({ theme }) => theme.neutral};
   border: none;
   cursor: pointer;
   font-size: 16px;
@@ -53,18 +53,27 @@ const AddButton = styled.button`
   }
 `;
 
-const ActionButton = styled.button`
-  background-color: ${(props) => (props.danger ? "#dc3545" : "#28a745")};
-  color: white;
-  padding: 8px 16px;
+const EditButton = styled.button`
+  background: none;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  margin: 0 5px;
+  padding: 5px;
+  color: #0061ab;
 
   &:hover {
-    background-color: ${(props) => (props.danger ? "#c82333" : "#218838")};
+    opacity: 0.8;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #dc143d;
+
+  &:hover {
+    opacity: 0.8;
   }
 `;
 
@@ -109,10 +118,9 @@ const Users = () => {
 
       <AddButton onClick={handleCreateNewUser}>
         <FontAwesomeIcon icon={faPlus} />
-        إنشاء حساب جديد
+        إضافة مستخدم
       </AddButton>
 
-      {/* عرض المستخدمين في جدول */}
       <UsersTable>
         <thead>
           <tr>
@@ -133,27 +141,26 @@ const Users = () => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>
-                  <ActionButton onClick={() => handleEditUser(user.id)}>
-                    تعديل
-                  </ActionButton>
+                  <EditButton onClick={() => handleEditUser(user.id)}>
+                    <FontAwesomeIcon icon={faEdit} />
+                  </EditButton>
                 </td>
                 <td>
-                  <ActionButton
-                    danger
+                  <DeleteButton
                     onClick={() => {
                       if (window.confirm("هل تريد حذف هذا المستخدم؟")) {
                         handleDeleteUser(user.id);
                       }
                     }}
                   >
-                    حذف
-                  </ActionButton>
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </DeleteButton>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="6">لا توجد بيانات مستخدمين.</td>
+              <td colSpan="6">لا توجد بيانات.</td>
             </tr>
           )}
         </tbody>

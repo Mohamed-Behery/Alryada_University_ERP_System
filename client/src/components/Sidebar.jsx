@@ -198,13 +198,13 @@ const Sidebar = ({ user, onLogout, darkMode, toggleDarkMode }) => {
         {isSidebarOpen && isCashRegisterOpen && (
           <SubMenu>
             <li>
-              <Link to="/bank-accounts">
+              <Link to="/banks">
                 <FontAwesomeIcon icon={faCreditCard} /> حسابات البنوك
               </Link>
             </li>
             <li>
-              <Link to="/cash-register">
-                <FontAwesomeIcon icon={faArchive} /> سجلات المعاملات
+              <Link to="/cash-registers">
+                <FontAwesomeIcon icon={faArchive} /> الخزائن النقدية
               </Link>
             </li>
           </SubMenu>

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\AccountController;
@@ -35,3 +37,15 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
+
+Route::get('cash-registers', [CashRegisterController::class, 'index'])->name('cash-registers.index');
+Route::get('cash-registers/{id}', [CashRegisterController::class, 'show'])->name('cash-registers.show');
+Route::post('cash-registers', [CashRegisterController::class, 'store'])->name('cash-registers.store');
+Route::put('cash-registers/{id}', [CashRegisterController::class, 'update'])->name('cash-registers.update');
+Route::delete('cash-registers/{id}', [CashRegisterController::class, 'destroy'])->name('cash-registers.destroy');
+
+Route::get('banks', [BankController::class, 'index'])->name('banks.index');
+Route::get('banks/{id}', [BankController::class, 'show'])->name('banks.show');
+Route::post('banks', [BankController::class, 'store'])->name('banks.store');
+Route::put('banks/{id}', [BankController::class, 'update'])->name('banks.update');
+Route::delete('banks/{id}', [BankController::class, 'destroy'])->name('banks.destroy');
