@@ -23,9 +23,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'name' => 'required|string',
+            'username' => 'required|string|unique:users',
+            'password' => 'required|string',
             'role' => 'required|string'
         ]);
 
@@ -35,7 +35,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
@@ -63,9 +63,23 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $user->update($request->only('name', 'email', 'role'));
+        $request->validate([
+            'name' => 'required|string',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'password' => 'nullable|string',
+            'role' => 'required|string',
+        ]);
+
+        $user->update($request->only('name', 'username', 'role'));
+
+        if (!empty($request->password)) {
+            $user->password = bcrypt($request->password);
+            $user->save();
+        }
+
         return response()->json(['message' => 'User updated successfully', 'user' => $user]);
     }
+
 
     public function destroy($id)
     {

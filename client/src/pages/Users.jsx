@@ -98,7 +98,6 @@ const Users = () => {
     navigate("/register");
   };
 
-  // حذف المستخدم
   const handleDeleteUser = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/api/users/${id}`);
@@ -125,8 +124,8 @@ const Users = () => {
         <thead>
           <tr>
             <th>الرقم التعريفي</th>
-            <th>الاسم</th>
-            <th>البريد الالكتروني</th>
+            <th>اسم الموظف</th>
+            <th>Username</th>
             <th>الصلاحية</th>
             <th>التعديل</th>
             <th>الحذف</th>
@@ -138,7 +137,7 @@ const Users = () => {
               <tr key={user.id}>
                 <td>{user.id}</td>
                 <td>{user.name}</td>
-                <td>{user.email}</td>
+                <td>{user.username}</td>
                 <td>{user.role}</td>
                 <td>
                   <EditButton onClick={() => handleEditUser(user.id)}>

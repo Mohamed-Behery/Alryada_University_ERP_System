@@ -9,7 +9,11 @@
 //   faChevronRight,
 // } from "@fortawesome/free-solid-svg-icons";
 
-// const ChartOfAccountsContainer = styled.div``;
+// const ChartOfAccountsContainer = styled.div`
+//   h2 {
+//     color: ${({ theme }) => theme.text};
+//   }
+// `;
 
 // const Table = styled.table`
 //   width: 100%;
@@ -17,18 +21,18 @@
 // `;
 
 // const TableHeader = styled.th`
-//   border: 1px solid #ddd;
+//   border: 1px solid ${({ theme }) => theme.border};
 //   padding: 10px;
 //   text-align: center;
 //   font-weight: bold;
-//   background-color: #4a5ecd;
-//   color: #fff;
+//   background-color: ${({ theme }) => theme.primary};
+//   color: ${({ theme }) => theme.neutral};
 //   font-size: 24px;
 //   position: sticky;
 // `;
 
 // const TableCell = styled.td`
-//   border: 1px solid ${(theme) => theme.border};
+//   border: 1px solid ${({ theme }) => theme.border};
 //   padding: 10px;
 //   text-align: center;
 //   font-size: 20px;
@@ -61,7 +65,7 @@
 //   border: none;
 //   cursor: pointer;
 //   padding: 5px;
-//   color: #007bff;
+//   color: #0061ab;
 
 //   &:hover {
 //     opacity: 0.7;
@@ -84,8 +88,8 @@
 //   margin-bottom: 16px;
 //   margin-right: 16px;
 //   padding: 10px 20px;
-//   background-color: #28a745;
-//   color: white;
+//   background-color: ${({ theme }) => theme.primary};
+//   color: ${({ theme }) => theme.neutral};
 //   border: none;
 //   cursor: pointer;
 //   font-size: 16px;
@@ -112,7 +116,8 @@
 // `;
 
 // const FormContainer = styled.div`
-//   background-color: white;
+//   background-color: ${({ theme }) => theme.bg};
+//   color: ${({ theme }) => theme.text};
 //   padding: 30px;
 //   border-radius: 8px;
 //   width: 400px;
@@ -143,15 +148,12 @@
 
 // const SubmitButton = styled.button`
 //   padding: 10px 20px;
-//   background-color: #4a5ecd;
-//   color: white;
+//   background-color: ${({ theme }) => theme.primary};
+//   color: ${({ theme }) => theme.neutral};
 //   border: none;
 //   cursor: pointer;
 //   border-radius: 4px;
-
-//   &:hover {
-//     background-color: #3a4ea1;
-//   }
+//   font-weight: bold;
 // `;
 
 // const CancelButton = styled.button`
@@ -177,8 +179,8 @@
 //   const [isFormVisible, setIsFormVisible] = useState(false);
 //   const [formData, setFormData] = useState({
 //     id: null,
-//    account_code: "",
-//    account_name: "",
+//     account_code: "",
+//     account_name: "",
 //     type: "",
 //     opening_balance: "",
 //     current_balance: "",
@@ -201,9 +203,9 @@
 //     if (account) {
 //       setFormData({
 //         id: account.id,
-//        account_code: account.account_code,
-//        account_name: account.account_name,
-//         type: account.account_type,
+//         account_code: account.account_code,
+//         account_name: account.account_name,
+//         type: account.type,
 //         opening_balance: account.opening_balance,
 //         current_balance: account.current_balance,
 //         parentId: account.parentId || null,
@@ -211,8 +213,8 @@
 //     } else {
 //       setFormData({
 //         id: null,
-//        account_code: "",
-//        account_name: "",
+//         account_code: "",
+//         account_name: "",
 //         type: "",
 //         opening_balance: "",
 //         current_balance: "",
@@ -226,8 +228,8 @@
 //     setIsFormVisible(false);
 //     setFormData({
 //       id: null,
-//      account_code: "",
-//      account_name: "",
+//       account_code: "",
+//       account_name: "",
 //       type: "",
 //       opening_balance: "",
 //       current_balance: "",
@@ -239,9 +241,9 @@
 //     e.preventDefault();
 
 //     const updatedAccount = {
-//      account_code: formData.account_code,
-//      account_name: formData.account_name,
-//       type: formData.account_type,
+//       account_code: formData.account_code,
+//       account_name: formData.account_name,
+//       type: formData.type,
 //       opening_balance: formData.opening_balance,
 //       current_balance: formData.current_balance,
 //     };
@@ -253,9 +255,9 @@
 //     } else {
 //       const newAccount = {
 //         id: Date.now(),
-//        account_code: formData.account_code,
-//        account_name: formData.account_name,
-//         type: formData.account_type,
+//         account_code: formData.account_code,
+//         account_name: formData.account_name,
+//         type: formData.type,
 //         opening_balance: formData.opening_balance,
 //         current_balance: formData.opening_balance,
 //         subAccounts: [],
@@ -362,7 +364,7 @@
 //             )}
 //             {account.account_name}
 //           </TableCell>
-//           <TableCell level={level}>{account.account_type}</TableCell>
+//           <TableCell level={level}>{account.type}</TableCell>
 //           <TableCell level={level}>{account.opening_balance}</TableCell>
 //           <TableCell level={level}>{account.current_balance}</TableCell>
 //           <TableCell level={level}>
@@ -418,7 +420,7 @@
 //                   type="text"
 //                   value={formData.account_code}
 //                   onChange={(e) =>
-//                     setFormData({ ...formData,account_code: e.target.value })
+//                     setFormData({ ...formData, account_code: e.target.value })
 //                   }
 //                   required
 //                 />
@@ -430,7 +432,7 @@
 //                   type="text"
 //                   value={formData.account_name}
 //                   onChange={(e) =>
-//                     setFormData({ ...formData,account_name: e.target.value })
+//                     setFormData({ ...formData, account_name: e.target.value })
 //                   }
 //                   required
 //                 />
@@ -440,7 +442,7 @@
 //                 <input
 //                   id="type"
 //                   type="text"
-//                   value={formData.account_type}
+//                   value={formData.type}
 //                   onChange={(e) =>
 //                     setFormData({ ...formData, type: e.target.value })
 //                   }
@@ -454,7 +456,10 @@
 //                   type="number"
 //                   value={formData.opening_balance}
 //                   onChange={(e) =>
-//                     setFormData({ ...formData, opening_balance: e.target.value })
+//                     setFormData({
+//                       ...formData,
+//                       opening_balance: e.target.value,
+//                     })
 //                   }
 //                   required
 //                 />
@@ -466,7 +471,10 @@
 //                   type="number"
 //                   value={formData.current_balance}
 //                   onChange={(e) =>
-//                     setFormData({ ...formData, current_balance: e.target.value })
+//                     setFormData({
+//                       ...formData,
+//                       current_balance: e.target.value,
+//                     })
 //                   }
 //                   required
 //                 />

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const EditUserContainer = styled.div`
   display: flex;
@@ -63,10 +65,30 @@ const Button = styled.button`
   }
 `;
 
+const PasswordWrapper = styled.div`
+  position: relative;
+`;
+
+const PasswordToggle = styled.span`
+  position: absolute;
+  top: 37%;
+  left: 16px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+  user-select: none;
+`;
+
 const EditUser = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: "", email: "", role: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [user, setUser] = useState({
+    name: "",
+    username: "",
+    // password: "",
+    role: "",
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -98,11 +120,15 @@ const EditUser = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <EditUserContainer>
       <Title>تعديل المستخدم</Title>
       <EditForm onSubmit={handleSubmit}>
-        <Label>الاسم:</Label>
+        <Label>اسم الموظف:</Label>
         <Input
           type="text"
           name="name"
@@ -110,14 +136,25 @@ const EditUser = () => {
           onChange={handleChange}
           required
         />
-        <Label>البريد الالكتروني:</Label>
+        <Label>اسم المستخدم Username:</Label>
         <Input
-          type="email"
-          name="email"
-          value={user.email}
+          type="text"
+          name="username"
+          value={user.username}
           onChange={handleChange}
           required
         />
+        <Label>كلمة المرور:</Label>
+        <PasswordWrapper>
+          <Input
+            type={showPassword ? "text" : "password"}
+            value={user.password}
+            onChange={handleChange}
+          />
+          <PasswordToggle onClick={togglePasswordVisibility}>
+            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+          </PasswordToggle>
+        </PasswordWrapper>
         <Label>الصلاحية:</Label>
         <Select name="role" value={user.role} onChange={handleChange} required>
           <option value="user">User</option>

@@ -125,7 +125,7 @@ const PasswordToggle = styled.span`
 
 const Login = ({ setUser }) => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -152,7 +152,7 @@ const Login = ({ setUser }) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
-        name,
+        username,
         password,
       });
       const { token, userData } = response.data;
@@ -163,7 +163,7 @@ const Login = ({ setUser }) => {
       setUser({
         token,
         id: decodedToken.sub,
-        name: userData.name,
+        username: userData.username,
         role: userData.role,
       });
 
@@ -190,8 +190,8 @@ const Login = ({ setUser }) => {
             </label>
             <FormControl
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </FormGroup>

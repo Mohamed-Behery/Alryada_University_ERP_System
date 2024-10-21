@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only('name', 'password');
+        $credentials = $request->only('username', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'invalid_credentials'], 401);
@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         $userData = [
             'sub' => $user->id,
-            'name' => $user->name,
+            'username' => $user->username,
             'role' => $user->role
         ];
 
@@ -36,15 +36,15 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:users',
-            'email' => 'required|string|email',
+            'name' => 'required|string',
+            'username' => 'required|string|unique:users',
             'password' => 'required|string',
             'role' => 'required|string',
         ]);
 
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'username' => $request->username,
             'password' => bcrypt($request->password),
             'role' => $request->role,
         ]);

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
-  faEnvelope,
   faLock,
   faEye,
   faEyeSlash,
   faUserPlus,
+  faAddressBook,
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import axios from "axios";
@@ -114,7 +114,7 @@ const PasswordToggle = styled.span`
 
 const Register = () => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("user");
@@ -129,7 +129,7 @@ const Register = () => {
     try {
       const response = await axios.post("http://localhost:8000/api/register", {
         name,
-        email,
+        username,
         password,
         role,
       });
@@ -152,8 +152,8 @@ const Register = () => {
         <form onSubmit={handleSignup}>
           <FormGroup>
             <label>
-              <FontAwesomeIcon icon={faUser} />
-              اسم المستخدم
+              <FontAwesomeIcon icon={faAddressBook} />
+              اسم الموظف باللغة العربية
             </label>
             <FormControl
               type="text"
@@ -164,13 +164,13 @@ const Register = () => {
           </FormGroup>
           <FormGroup>
             <label>
-              <FontAwesomeIcon icon={faEnvelope} />
-              البريد الإلكتروني
+              <FontAwesomeIcon icon={faUser} />
+              اسم المستخدم Username
             </label>
             <FormControl
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </FormGroup>
